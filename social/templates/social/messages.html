@@ -1,0 +1,64 @@
+{% extends "social/base.html" %}
+
+{% block content %}
+<div class='main'>
+{% if error %}
+	<div>
+		<span class='warning'>{{ error }}</span>
+	</div>
+{% endif %}
+<div><h3>Messages</h3></div>
+<br />
+<div id='messages'>
+	<table>
+		<tr><th>Author</th><th>Recipient</th><th>Message</th><th>Date</th></tr>
+		{% if chat_messages %}
+			{% for message in chat_messages %}
+				{% if message.private %}
+					<tr>
+						<td>{{ message.author }}</td>
+						<td>{{ message.recip }}</td>
+						<td><span class='whisper'>{{ message.message }}</span></td>
+						<td>{{ message.time }}</td>
+					</tr>
+				{% else %}
+					<tr>
+						<td>{{ message.author }}</td>
+						<td>{{ message.recip }}</td>
+						<td>{{ message.message }}</td>
+						<td>{{ message.time }}</td>
+					</tr>
+				{% endif %}
+			{% empty %}
+				<tr colspan='3'>
+					<td>No messages</td>
+				</tr>
+			{% endfor %}
+		{% else %}
+			<tr colspan='3'>
+				<td>No messages</td>
+			</tr>
+		{% endif %}
+	</table>
+</div>
+<div id='form'>
+	<form method='post' action='/social/messages/' enctype='multipart/form-data'>
+	{% csrf_token %}
+		<select name='recip'>
+			<option selected='selected' disabled>Select a member</option>
+			{% for member in members %}
+				<option value='{{ member }}'>{{ member }}</option>
+			{% endfor %}
+		</select>
+		<br/><br/>
+		<textarea name='message' rows='5' cols='50' placeholder='Enter your message here'></textarea>
+		<br/>
+		<input type='radio' name='message_type' value='0'>Public
+		<input type='radio' name='message_type' value='1'>Private
+		<br/><br/>
+		<input type='submit' value='Send'>
+	</form>
+</div>
+<br>
+</div>
+{% endblock %}
